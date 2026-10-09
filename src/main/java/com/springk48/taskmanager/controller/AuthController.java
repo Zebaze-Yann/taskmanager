@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springk48.taskmanager.dto.LoginRequest;
 import com.springk48.taskmanager.dto.RegisterRequest;
 import com.springk48.taskmanager.dto.UserResponse;
 import com.springk48.taskmanager.service.AuthService;
@@ -25,6 +26,12 @@ public class AuthController {
     public ResponseEntity<UserResponse> subscribeUser(@RequestBody RegisterRequest request) {
         UserResponse user = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> loginUser(@RequestBody LoginRequest request) {
+        UserResponse user = authService.login(request);
+        return ResponseEntity.ok(user);
     }
 
 }

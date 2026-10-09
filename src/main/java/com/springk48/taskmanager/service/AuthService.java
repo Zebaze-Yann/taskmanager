@@ -4,9 +4,11 @@ import com.springk48.taskmanager.model.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.springk48.taskmanager.dto.LoginRequest;
 import com.springk48.taskmanager.dto.RegisterRequest;
 import com.springk48.taskmanager.dto.UserResponse;
 import com.springk48.taskmanager.exception.AlreadyExistingEmailException;
+import com.springk48.taskmanager.exception.InvalidCredentialsException;
 import com.springk48.taskmanager.model.User;
 import com.springk48.taskmanager.repository.UserRepository;
 
@@ -32,6 +34,19 @@ public class AuthService {
 
         User saved = userRepository.save(toUser(request));
         return userService.toResponse(saved);
+
+    }
+
+    public UserResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("donnée invalide"));
+
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            return userService.toResponse(user);
+
+        } else {
+            throw new InvalidCredentialsException("donnée invalide");
+        }
 
     }
 
