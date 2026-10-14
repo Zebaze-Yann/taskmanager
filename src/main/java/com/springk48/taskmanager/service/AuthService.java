@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.springk48.taskmanager.dto.LoginRequest;
+import com.springk48.taskmanager.dto.LoginResponse;
 import com.springk48.taskmanager.dto.RegisterRequest;
 import com.springk48.taskmanager.dto.UserResponse;
 import com.springk48.taskmanager.exception.AlreadyExistingEmailException;
@@ -18,11 +19,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, UserService userService, PasswordEncoder passwordEncoder,
+            JwtService jwtService) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public UserResponse register(RegisterRequest request) {
@@ -37,12 +41,13 @@ public class AuthService {
 
     }
 
-    public UserResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("donnée invalide"));
 
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return userService.toResponse(user);
+            String token = jwtService.generateToken(user);
+            return new LoginResponse(token, userService.toResponse(user));
 
         } else {
             throw new InvalidCredentialsException("donnée invalide");

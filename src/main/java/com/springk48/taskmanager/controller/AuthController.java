@@ -11,6 +11,7 @@ import com.springk48.taskmanager.dto.LoginRequest;
 import com.springk48.taskmanager.dto.RegisterRequest;
 import com.springk48.taskmanager.dto.UserResponse;
 import com.springk48.taskmanager.service.AuthService;
+import com.springk48.taskmanager.dto.LoginResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,8 +30,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> loginUser(@RequestBody LoginRequest request) {
-        UserResponse user = authService.login(request);
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest request) {
+        LoginResponse user = authService.login(request);
         return ResponseEntity.ok(user);
     }
 
